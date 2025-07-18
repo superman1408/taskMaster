@@ -1,10 +1,8 @@
 import { signInSchema } from '@/lib/schema';
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { log } from 'console';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -14,6 +12,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router';
 
 
 type SigninFormData = z.infer<typeof signInSchema>
@@ -48,14 +48,14 @@ const SignIn = () => {
       className='min-h-screen flex flex-col items-center justify-center bg-muted-40 p-4'
     >
       <Card className='max-w-md w-full shadow-xl'>
-        <CardHeader>
-          <CardTitle>Welcome Back</CardTitle>
-          <CardDescription>Sign In to your account to continue</CardDescription>
+        <CardHeader className='text-center mb-5'>
+          <CardTitle className='text-2xl font-bold'>Welcome Back</CardTitle>
+          <CardDescription className='text-sm text-muted-foreground'>Sign In to your account to continue</CardDescription>
         </CardHeader>
         <CardContent>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleOnSubmit)}>
+            <form onSubmit={form.handleSubmit(handleOnSubmit)} className='space-y-6'>
               <FormField
                 control={form.control}
                 name='email'
@@ -69,8 +69,33 @@ const SignIn = () => {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name='password'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type='password' placeholder='******' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type='submit' className='w-full'>
+                Sign in
+              </Button>
             </form>
           </Form>
+
+          <CardFooter>
+            <div className='flex items-center justify-center'>
+              <p className='text-sm text-muted-foreground'>
+                Don&apos;t have an account?{" "}
+                <Link to="/sign-up" >Sign Up</Link>
+              </p>
+            </div>
+          </CardFooter>
 
         </CardContent>
       </Card>
