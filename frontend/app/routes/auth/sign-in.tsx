@@ -1,4 +1,5 @@
 import { signInSchema } from '@/lib/schema';
+import type { Route } from "../../+types/root";
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +15,15 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router';
+
+
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Task Master" },
+    { name: "description", content: "Welcome to React Router!" },
+  ];
+}
 
 
 type SigninFormData = z.infer<typeof signInSchema>
@@ -74,7 +84,13 @@ const SignIn = () => {
                 name='password'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+
+                    <div className='flex items-center justify-between'>
+                      <FormLabel>Password</FormLabel>
+
+                      <Link to="/forgot-password" className='text-sm text-blue-600'>Forgot password ?</Link>
+                    </div>
+                    
                     <FormControl>
                       <Input type='password' placeholder='******' {...field} />
                     </FormControl>
@@ -88,7 +104,7 @@ const SignIn = () => {
             </form>
           </Form>
 
-          <CardFooter>
+          <CardFooter className='flex items-center justify-center mt-6'>
             <div className='flex items-center justify-center'>
               <p className='text-sm text-muted-foreground'>
                 Don&apos;t have an account?{" "}
