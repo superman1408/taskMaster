@@ -8,6 +8,21 @@ import dotenv from "dotenv";
 dotenv.config({ quiet: true });
 
 const app = express();
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    methods: ["GET", "POST", "DELETE", "PUT"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
+app.use(morgan("dev"));
+
+
+// db connection
+mongoose
+    .connect(process.env.MONGODB_URI)
+    .then(() => console.log("MongoDB is connected and running...!!"))
+    .catch((err) => console.log("MongoDB failed to connect "+ err))
+
 app.use(express.json());
 
 
@@ -20,6 +35,21 @@ app.get("/", async (req, res) => {
     });
 });
 
+
+//error middleware
+app.use((err, req, res, next) => {
+    console.log(err.stack);
+    
+    res.status(500).json({
+        message: "Internal server error"
+    });
+});
+
+
+//Page not found middleware
+app.use((req, res) => { 
+    res.status(404).json({ message: "Not found" });
+});
 
 
 app.listen(PORT, () => { 
