@@ -15,6 +15,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router';
+import { useSignUpMutation } from '@/hooks/use-auth';
+import { toast } from 'sonner';
 
 
 
@@ -26,7 +28,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 
-type SignUpFormData = z.infer<typeof signUpSchema>
+export type SignUpFormData = z.infer<typeof signUpSchema>
 
 const SignUp = () => {
   // const form = useForm<z.infer<typeof signInSchema>>({
@@ -49,8 +51,20 @@ const SignUp = () => {
     });
   
   
+  const { mutate, isPending } = useSignUpMutation();
+  
+  
   const handleOnSubmit = (value: SignUpFormData) => { 
-    console.log(value);
+    mutate(value, {
+      onSuccess: () => {
+        toast.success("Account created successfully");
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || "An error occurred";
+        console.log(error);
+        toast.error(errorMessage);
+      },
+    });
   };
 
 

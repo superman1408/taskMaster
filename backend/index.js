@@ -4,6 +4,8 @@ import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
 
+import routes from "./routes/index.js";
+
 
 dotenv.config({ quiet: true });
 
@@ -34,6 +36,10 @@ app.get("/", async (req, res) => {
         message: `Welcome to Task Master server at ${PORT}`,
     });
 });
+
+
+//http://localhost:1234/api-v1/
+app.get("/api-v1", routes);
 
 
 //error middleware
