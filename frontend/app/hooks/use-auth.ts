@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { SignUpFormData }  from "@/routes/auth/sign-up";
+import type { SignUpFormData }  from "@/routes/auth/sign-up";
 import { postData } from "@/lib/fetch-util";
 
 
