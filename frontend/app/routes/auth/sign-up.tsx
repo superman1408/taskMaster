@@ -40,15 +40,15 @@ const SignUp = () => {
   // });
 
 
-    const form = useForm<SignUpFormData>({
+  const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: "",
       password: "",
       name: "",
       confirmPassword: "",
-    }
-    });
+    },
+  });
   
   
   const { mutate, isPending } = useSignUpMutation();
@@ -89,7 +89,7 @@ const SignUp = () => {
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input type='email' placeholder='John Doe' {...field} />
+                      <Input type='name' placeholder='John Doe' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
