@@ -7,9 +7,10 @@ import dotenv from "dotenv";
 import routes from "./routes/index.js";
 
 
-dotenv.config({ quiet: true });
+dotenv.config();
 
 const app = express();
+
 app.use(cors({
     origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST", "DELETE", "PUT"],
@@ -28,7 +29,7 @@ mongoose
 app.use(express.json());
 
 
-const PORT = process.env.PORT || 5678;
+const PORT = process.env.PORT || 5000;
 
 
 app.get("/", async (req, res) => { 
@@ -38,8 +39,8 @@ app.get("/", async (req, res) => {
 });
 
 
-//http://localhost:1234/api-v1/
-app.get("/api-v1", routes);
+//http://localhost:5000/api-v1/
+app.use("/api-v1", routes);
 
 
 //error middleware

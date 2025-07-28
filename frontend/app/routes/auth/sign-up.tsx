@@ -134,8 +134,10 @@ const SignUp = () => {
                   </FormItem>
                 )}
               />
-              <Button type='submit' className='w-full'>
-                Sign up
+              <Button type='submit' className='w-full' disabled= {isPending}>
+                {
+                  isPending ? "Signing up..." : "Sign up"
+                }
               </Button>
             </form>
           </Form>

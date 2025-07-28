@@ -4,6 +4,9 @@ import bcrypt from "bcrypt";
 
 const registerUser = async (req, res) => {
 
+    console.log("Hello I am working in Register USER....!!!");
+    
+
 
     try {
 
