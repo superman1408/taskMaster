@@ -1,6 +1,7 @@
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
 
+
 const registerUser = async (req, res) => {
 
 
@@ -11,7 +12,7 @@ const registerUser = async (req, res) => {
         const existingUser = await User.findOne({ email });
 
         if (existingUser) {
-            return res.status(400).json({ message: "User already exist."})
+            return res.status(400).json({ message: "Email address already in use."})
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -24,11 +25,11 @@ const registerUser = async (req, res) => {
             name,
         });
 
-        // TODO send email.
+        // TODO: send email.
 
         
         res.status(201).json({
-            message: "Verification email is send to your. Please check and verify your account."
+            message: "Verification email is send to your email. Please check and verify your account."
         });
         
     } catch (error) {
