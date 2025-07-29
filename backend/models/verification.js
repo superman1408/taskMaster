@@ -8,5 +8,16 @@ const verificationSchema = new mongoose.Schema({
     },
     token: {
         type: String,
+        required: true,
     },
-});
+    expiresAt: {
+        type: Date,
+        required: true,
+    },
+}, { timestamps: true }
+);
+
+
+const Verification = mongoose.model("Verification", verificationSchema);
+
+export default Verification;

@@ -47,7 +47,9 @@ const SignIn = () => {
     });
   
   
-  const handleOnSubmit = (value: SigninFormData) => { 
+  const handleOnSubmit = (value: SigninFormData) => {
+    console.log("Submit function is working...!!");
+    
     console.log(value);
   };
 
