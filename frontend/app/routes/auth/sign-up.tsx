@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useSignUpMutation } from '@/hooks/use-auth';
 import { toast } from 'sonner';
 
@@ -31,6 +31,7 @@ export function meta({}: Route.MetaArgs) {
 export type SignUpFormData = z.infer<typeof signUpSchema>
 
 const SignUp = () => {
+  const navigate = useNavigate();
   // const form = useForm<z.infer<typeof signInSchema>>({
   //   resolver: zodResolver(signInSchema),
   //   defaultValues: {
@@ -57,7 +58,12 @@ const SignUp = () => {
   const handleOnSubmit = (value: SignUpFormData) => { 
     mutate(value, {
       onSuccess: () => {
-        toast.success("Account created successfully");
+        toast.success("Account created successfully", {
+          description: "Please check your email for verification link. If you don't see it, please check your spam folder."
+        });
+
+        form.reset();
+        navigate("/sign-in");
       },
       onError: (error: any) => {
         const errorMessage = error.response?.data?.message || "An error occurred";
