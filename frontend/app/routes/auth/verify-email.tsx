@@ -2,20 +2,37 @@ import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/
 import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 
-import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, Loader, XCircle } from "lucide-react";
 import { Button } from '@/components/ui/button';
+import { useVerifyEmailMutation } from '@/hooks/use-auth';
+import { toast } from 'sonner';
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+  // const token = searchParams.get("token");
   const [isSuccess, setIsSuccess] = useState(false);
+  const { mutate, isPending: isVerifying } = useVerifyEmailMutation();
 
 
-  useEffect(() => { 
-    const token = searchParams.get("token");
-    if (!token) {
-      setIsSuccess(false);
-    } else {
-      setIsSuccess(true);
+  useEffect(() => {
+    if (token) {
+      mutate(
+        { token },
+        {
+          onSuccess: () => {
+            setIsSuccess(true);
+          },
+          onError: (error: any) => {
+            const errorMessage = error.response?.data?.message || "An error occurred";
+            setIsSuccess(false);
+            console.log(error);
+
+            toast.error(errorMessage);
+            
+          },
+        }
+      );
     }
   }, [searchParams]);
 
@@ -26,17 +43,25 @@ const VerifyEmail = () => {
       <h1 className='text-2xl font-bold'>Verify Email</h1>
       <p className='text-sm text-gray-500'>Verifying your email...</p>
       <Card className='w-full max-w-md'>
-        <CardHeader>
+        {/* <CardHeader>
           <Link to="/sign-in" className='flex items-center gap-2 text-sm'>
             <ArrowLeft className='w-4 h-4 mr-2' />
             Back to Sign in
           </Link>
-        </CardHeader>
+        </CardHeader> */}
 
         <CardContent >
           <div className='flex flex-col items-center justify-center py-6'>
             {
-              isSuccess ? (
+              isVerifying ? (
+                <>
+                  <Loader className='w-10 h-10 text-gray-500 animate-spin' />
+                  <h3 className='text-lg font-semibold'>Verifying email...</h3>
+                  <p>
+                    Please wait while we verify your email.
+                  </p>
+                </>
+               ) : isSuccess ? (
                 <>
                   <CheckCircle className='w-10 h-10 text-green-500' />
                   <h3 className="text-lg font-semibold">Email Verified</h3>
