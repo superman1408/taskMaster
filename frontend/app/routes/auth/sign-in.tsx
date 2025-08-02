@@ -14,7 +14,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { useLoginMutation } from '@/hooks/use-auth';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/provider/auth-context';
 
 
 
@@ -29,6 +33,9 @@ export function meta({}: Route.MetaArgs) {
 type SigninFormData = z.infer<typeof signInSchema>
 
 const SignIn = () => {
+  const navigate = useNavigate();
+
+  const { login } = useAuth();
   // const form = useForm<z.infer<typeof signInSchema>>({
   //   resolver: zodResolver(signInSchema),
   //   defaultValues: {
@@ -39,18 +46,31 @@ const SignIn = () => {
 
 
     const form = useForm<SigninFormData>({
-    resolver: zodResolver(signInSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    }
+      resolver: zodResolver(signInSchema),
+      defaultValues: {
+        email: "",
+        password: "",
+      },
     });
+  
+  const { mutate, isPending } = useLoginMutation();
   
   
   const handleOnSubmit = (value: SigninFormData) => {
-    console.log("Submit function is working...!!");
-    
-    console.log(value);
+    mutate(value, {
+      onSuccess: (data) => {
+        login(data);
+        console.log(data);
+        toast.success("Login successful");
+        navigate("/dashboard");
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message || "An error occurred";
+        console.log(error);
+        
+        toast.error(errorMessage);
+      },
+    });
   };
 
 
@@ -100,8 +120,8 @@ const SignIn = () => {
                   </FormItem>
                 )}
               />
-              <Button type='submit' className='w-full'>
-                Sign in
+              <Button type='submit' className='w-full' disabled= {isPending}>
+                {isPending ? <Loader2 className="w-4 h-4 mr-2" /> : "Sign in"}
               </Button>
             </form>
           </Form>
