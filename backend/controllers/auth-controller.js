@@ -99,6 +99,7 @@ const loginUser = async (req, res) => {
         });
       } else {
         await Verification.findByIdAndDelete({ _id: existingVerification._id });
+        
         const verificationToken = jwt.sign(
           { userId: user._id, purpose: "email-verification" },
           process.env.JWT_SECRET,
@@ -224,4 +225,158 @@ const verifyEmail = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, verifyEmail };
+
+const resetPasswordRequest = async (req, res) => {
+  console.log("Forget Password function is working");
+
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "user not found" });
+    };
+
+    if (!user.isEmailVerified) {
+      return res.status(400).json({ message: "Please verify your email"});
+    };
+
+    const existingVerification = await Verification.findOne({ userId: user._id });
+
+    if (existingVerification && existingVerification.expiresAt > new Date()) {
+      return res.status(400).json({ message: "Reset password request already send." });
+    };
+
+    if (existingVerification && existingVerification.expiresAt < new Date()) {
+      await Verification.findByIdAndDelete(existingVerification._id);
+    };
+
+    const resetPasswordToken = jwt.sign(
+      { userId: user._id, purpose: "reset-password" },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m"},
+    );
+
+    await Verification.create({
+      userId: user._id,
+      token: resetPasswordToken,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000)
+    });
+
+    // Send email
+    const resetPasswordLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetPasswordToken}`;
+    const emailBody = `<p>Click <a href="${resetPasswordLink}">here</a> to reset your password</p>`;
+    const emailSubject = "Reset your password";
+
+    const isEmailSent = await sendEmail(email, emailSubject, emailBody);
+
+    if (!isEmailSent) {
+      return res.status(500).json({
+        message: "Failed to send reset password email",
+      });
+    };
+
+    return res.status(201).json({
+      message:
+        "Reset password email send.",
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Internal server error.",
+    });
+  }
+};
+
+
+const verifyResetPasswordTokenAndResetPassword = async (req, res) => { 
+  console.log("Verify reset password token and reset password is working fine....!");
+
+  try {
+
+    const { token, newPassword, confirmPassword } = req.body;
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!payload) {
+      return res.status(401).json({
+        message: "Unauthorized"
+      });
+    };
+
+    const { userId, purpose } = payload;
+
+    if (purpose !== "reset-password") {
+      return res.status(401).json({
+        message: "Unauthorized"
+      });
+    };
+
+    const verification = await Verification.findOne({
+      userId,
+      token,
+    });
+
+    if (!verification) {
+      return res.status(401).json({
+        message: "Unauthorized"
+      });
+    };
+
+    const isTokenExpired = verification.expiresAt < new Date();
+
+    if (isTokenExpired) {
+      return res.status(401).json({
+        message: "Token expired"
+      });
+    };
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(401).json({
+        message: "Unauthorized"
+      });
+    };
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        message: "Password do not match"
+      });
+    };
+
+    const salt = await bcrypt.genSalt(10);
+
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashPassword;
+
+    await user.save();
+
+    await Verification.findByIdAndDelete(verification._id);
+
+    res.status(201).json({
+      message: "Password reset successful",
+    });
+    
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Internal server error"
+    });
+    
+  }
+  
+};
+
+
+export {
+  registerUser,
+  loginUser,
+  verifyEmail,
+  resetPasswordRequest,
+  verifyResetPasswordTokenAndResetPassword,
+};

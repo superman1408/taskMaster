@@ -23,3 +23,10 @@ export const useLoginMutation = () => {
         mutationFn: (data: { email: string; password: string }) => postData("/auth/login", data),
     });
 };
+
+
+export const useForgotPasswordMutation = () => { 
+    return useMutation({
+        mutationFn: (data: { email: string }) => postData("/auth/reset-password-request", data),
+    });
+};

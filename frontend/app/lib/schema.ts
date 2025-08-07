@@ -16,3 +16,17 @@ export const signUpSchema = z.object({
     path: ["confirmPassword"],
     error: "Password do not match",//message: "Password do not match." but this "message" is deprecated.
 });
+
+
+export const forgotPasswordSchema = z.object({
+    email: z.string().email("Invalid email address"),
+});
+
+
+export const resetPasswordSchema = z.object({
+    newPassword: z.string().min(8, "Password must be 8 characters."),
+    confirmPassword: z.string().min(8, "Password must be 8 characters.")
+}).refine((data) => data.newPassword === data.confirmPassword, {
+    path: ["confirmPassword"],
+    error: "Password do not match",
+});
