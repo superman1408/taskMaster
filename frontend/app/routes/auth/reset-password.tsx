@@ -1,10 +1,15 @@
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useResetPasswordMutation } from '@/hooks/use-auth';
 import { resetPasswordSchema } from '@/lib/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useSearchParams } from 'react-router';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 
@@ -17,7 +22,7 @@ const ResetPassword = () => {
 
   const [isSuccess, setIsSuccess] = useState(false);
 
-
+  const { mutate: resetPassword, isPending } = useResetPasswordMutation();
 
 
   const form = useForm<ResetPasswordFormData>({
@@ -28,8 +33,23 @@ const ResetPassword = () => {
     },
   });
 
-  const onSubmit = (data: ResetPasswordFormData) => { 
-    console.log(data);
+
+  const onSubmit = (value: ResetPasswordFormData) => { 
+    if (!token) {
+      toast.error("Invalid token");
+      return;
+    };
+
+    resetPassword({ ...value, token: token as string}, {
+      onSuccess: () => {
+        setIsSuccess(true);
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response?.data?.message;
+        console.log(error);
+        toast.error(errorMessage);
+      },
+    });
   };
 
 
@@ -48,7 +68,58 @@ const ResetPassword = () => {
               <span>Back to sign in</span>
             </Link>
           </CardHeader>
-          <CardContent></CardContent>
+
+
+          <CardContent>
+            {
+              isSuccess ? (
+                <div className='flex flex-col items-center justify-center'>
+                  <CheckCircle className='w-10 h-10 text-green-500'/>
+                  <h1 className='text-2xl font-bold'>Password reset successful</h1>
+                </div>
+              ) : (
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                      <FormField
+                        name='newPassword'
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>New Password</FormLabel>
+                            <FormControl>
+                              <Input {...field} type='password' placeholder='Enter your new password'/>
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        name='confirmPassword'
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Confirm Password</FormLabel>
+                            <FormControl>
+                              <Input {...field} type='password' placeholder='Enter your new password again'/>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <Button type="submit" className="w-full" disabled={isPending}>
+                          {
+                            isPending ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                "Reset Password"
+                            )
+                          }
+                      </Button>
+                    </form>
+                  </Form>
+              )
+            }
+          </CardContent>
         </Card>
 
       </div>
