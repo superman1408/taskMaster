@@ -5,10 +5,12 @@ import React, { useState } from 'react'
 import { Navigate, Outlet, useNavigate } from 'react-router';
 import { Header } from '@/components/layout/header';
 import type { Workspace } from '@/types';
+import { SidebarComponent } from '@/components/layout/sidebar-component';
+import { CreateWorkspace } from '@/components/workspace/create-workspace';
 
 const DashboardLayout = () => {
   const { isAuthenticated, isLoading } = useAuth();
-  const [isCreatingWorkspace, setCreatingWorkspace] = useState(false);
+  const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null);
 
   if (isLoading) {
@@ -30,18 +32,23 @@ const DashboardLayout = () => {
 
   return (
     <div className='flex h-screen w-full'>
-      {/* <SidebarComponent/> */}
+      <SidebarComponent currentWorkspace={currentWorkspace} />
       <div className='flex flex-1 flex-col h-full'>
         <Header
           onWorkspaceSelected={handleOnWorkspaceSelected}
           selectedWorkspace={currentWorkspace}
-          onCreateWorkspace={() => setCreatingWorkspace(true)}
+          onCreateWorkspace={() => setIsCreatingWorkspace(true)}
         />
         <main className='flex-1 overflow-y-auto h-full w-full'>
           <div className='mx-auto container px-2 sm:px-6 lg:px-8 py-0 md:py-8 w-full h-full'>
             <Outlet />
           </div>
         </main>
+
+        <CreateWorkspace
+          isCreatingWorkspace={isCreatingWorkspace}
+          setIsCreatingWorkspace={setIsCreatingWorkspace}
+        />
       </div>
     </div>
   )
