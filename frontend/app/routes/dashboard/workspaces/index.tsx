@@ -71,14 +71,17 @@ const WorkspaceCard = ({ workspace }: { workspace: Workspace }) => {
                     <div className='flex items-center justify-between'>
                         <div className='flex gap-2'>
                             <WorkspaceAvatar name={workspace.name} color={workspace.color} />
+                            <div>
+                                <CardTitle>{workspace.name}</CardTitle>
+                                <span className='text-xs text-muted-foreground'>
+                                    {format(workspace.createdAt, "MMM d, yyyy h:mm a")}
+                                </span> 
+                            </div>
+
+
                         </div>
                         
-                        <div>
-                           <CardTitle>{workspace.name}</CardTitle>
-                            <span className='text-xs text-muted-foreground'>
-                                {format(workspace.createdAt, "MMM d, yyyy h:mm a")}
-                            </span> 
-                        </div>
+                        
                         
                     </div>
                 </CardHeader>
