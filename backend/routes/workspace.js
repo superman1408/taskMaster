@@ -3,7 +3,12 @@ import { validateRequest } from "zod-express-middleware";
 import { z } from "zod";
 
 import { workspaceSchema } from "../libs/validate-schema.js";
-import { createWorkspace, getWorkspaces } from "../controllers/workspace.js";
+import {
+  createWorkspace,
+  getWorkspaces,
+  getWorkspaceDetails,
+  getWorkspaceProjects,
+} from "../controllers/workspace.js";
 import authMiddleware from "../middleware/auth-middleware.js";
 
 
@@ -19,6 +24,10 @@ router.post(
 
 
 router.get("/", authMiddleware, getWorkspaces);
+
+router.get("/:workspaceId", authMiddleware, getWorkspaceDetails);
+
+router.get("/:workspaceId/projects", authMiddleware, getWorkspaceProjects)
 
 
 export default router;
