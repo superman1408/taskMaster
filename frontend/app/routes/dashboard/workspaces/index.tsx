@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import { Link, useLoaderData } from 'react-router';
 import type { Workspace } from "@/types";
 import { CreateWorkspace } from '@/components/workspace/create-workspace';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Users } from 'lucide-react';
 import { NoDataFound } from '@/components/no-data-found';
 import { WorkspaceAvatar } from '@/components/workspace/workspace-avatar';
 import { format } from 'date-fns';
@@ -80,11 +80,26 @@ const WorkspaceCard = ({ workspace }: { workspace: Workspace }) => {
 
 
                         </div>
-                        
-                        
+
+                        <div className='flex items-center text-muted-foreground'>
+                            <Users className='size-4 mr-1'/>
+                            <span className='text-xs'>
+                                { workspace.members.length }
+                            </span>
+                        </div>
                         
                     </div>
+
+                    <CardDescription>
+                        { workspace.description || "No description" }
+                    </CardDescription>
                 </CardHeader>
+
+                <CardContent>
+                    <div className='text-sm text-muted-foreground'>
+                        View workspace details and projects
+                    </div>
+                </CardContent>
             </Card>
         </Link>
     );
