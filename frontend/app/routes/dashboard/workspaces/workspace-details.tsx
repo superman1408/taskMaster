@@ -48,7 +48,7 @@ const WorkspaceDetails = () => {
       <ProjectList
         workspaceId={workspaceId}
         projects={data.projects}
-        onCreateProject={() => setIsCreateProject}
+        onCreateProject={() => setIsCreateProject(true)}
       />
 
       <CreateProjectDialog
