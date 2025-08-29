@@ -14,6 +14,8 @@ import { Button } from "../ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Checkbox } from "../ui/checkbox";
+import { UseCreateProject } from "@/hooks/use-project";
+import { toast } from "sonner";
 
 
 interface CreateProjectDialogProps {
@@ -45,9 +47,32 @@ export const CreateProjectDialog = ({
         },
     });
 
+    const { mutate, isPending } = UseCreateProject();
 
-    const onSubmit = (data: CreateProjectFormData) => { 
-        console.log(data);
+
+    const onSubmit = (values: CreateProjectFormData) => { 
+        console.log(values + "  Creating the project is initiated");
+        
+        if (!workspaceId) return;
+
+        mutate({
+            projectData: values,
+            workspaceId,
+        },
+            {
+                onSuccess: () => { 
+                    toast.success("Project created successfully");
+                    form.reset();
+                    onOpenChange(false);
+                },
+                onError: (error: any) => {
+                    const errorMessage = error.response.data.message;
+                    toast.error(errorMessage);
+                    console.log(error);
+                    
+                },
+            }
+        );
     };
 
 
@@ -324,9 +349,13 @@ export const CreateProjectDialog = ({
                                 );
                             }}
                         />
+
+
                         <DialogFooter>
-                            <Button type="submit" >
-                                Create Project
+                            <Button type="submit" disabled={isPending}>
+                                {
+                                    isPending ? "Creating..." : "Create Project"
+                                }
                             </Button>
                         </DialogFooter>
 

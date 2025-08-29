@@ -23,7 +23,7 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { useCreateWorkspace } from "@/hooks/use-workspace";
 import { toast } from "sonner";
-import { useNavigate } from "react-router";
+import { data, useNavigate } from "react-router";
 
 interface CreateWorkspaceProps {
   isCreatingWorkspace: boolean;
@@ -79,6 +79,9 @@ export const CreateWorkspace = ({
       },
     });
   };
+
+
+  
   
 
   return (

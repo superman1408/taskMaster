@@ -34,6 +34,9 @@ const WorkspaceDetails = () => {
     );
   }
 
+  // console.log(data);
+  
+
 
 
   return (
