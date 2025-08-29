@@ -3,7 +3,7 @@ import { ProjectStatus, type MemberProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -13,6 +13,7 @@ import { Calendar } from "../ui/calendar";
 import { Button } from "../ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { Checkbox } from "../ui/checkbox";
 
 
 interface CreateProjectDialogProps {
@@ -48,9 +49,6 @@ export const CreateProjectDialog = ({
     const onSubmit = (data: CreateProjectFormData) => { 
         console.log(data);
     };
-
-
-
 
 
     return (
@@ -209,21 +207,128 @@ export const CreateProjectDialog = ({
                             )}
                         />
 
-                        {/* <FormField
+                        <FormField
                             control={form.control}
                             name="members"
-                            render={({ field }) => (
+                            render={({ field }) => {
+                                const selectedMembers = field.value || [];
                                 return (
                                     <FormItem>
                                         <FormLabel>Members</FormLabel>
                                         <FormControl>
-                                        
+                                            <Popover modal={true}>
+                                                <PopoverTrigger asChild>
+                                                    <Button variant={"outline"}
+                                                        className="w-full justify-start text-left font-normal min-h-11"
+                                                    >
+                                                        {
+                                                            selectedMembers.length === 0 ? (
+                                                                <span className="text-muted-foreground">
+                                                                    Select Members
+                                                                </span>
+                                                            ) : selectedMembers.length <= 2 ? (
+                                                                    selectedMembers.map((m) => {
+                                                                    const member = workspaceMembers.find(
+                                                                        (wm) => wm.user._id === m.user
+                                                                    );
+
+                                                                    return `${member?.user.name} (${m.role})`;
+                                                                    })
+                                                            ) : (
+                                                                `${selectedMembers.length} members selected`
+                                                            )
+                                                        }
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-full max-w-60 overflow-y-auto" align="start">
+                                                    <div className="flex flex-col gap-2">
+                                                        {
+                                                            workspaceMembers.map((member) => {
+                                                                const selectedMember = selectedMembers.find(
+                                                                    (m) => m.user === member.user._id
+                                                                )
+
+                                                                return (
+                                                                    <div
+                                                                        key={member._id}
+                                                                        className="flex items-center gap-2 p-2 border rounded"
+                                                                    >
+                                                                        <Checkbox
+                                                                            checked={!!selectedMember}
+                                                                            onCheckedChange={(checked) => {
+                                                                                if (checked) {
+                                                                                    field.onChange([
+                                                                                        ...selectedMembers,
+                                                                                        {
+                                                                                            user: member.user._id,
+                                                                                            role: "contributor",
+                                                                                        },
+                                                                                    ]);
+                                                                                } else {
+                                                                                    field.onChange(
+                                                                                        selectedMembers.filter(
+                                                                                            (m) => m.user !== member.user._id
+                                                                                        )
+                                                                                    )
+                                                                                }
+                                                                            }}
+                                                                            id={`member-${member.user._id}`}
+                                                                        />
+                                                                        <span className="truncate flex-1">{member.user.name}</span>
+
+                                                                        {selectedMember && (
+                                                                            <Select
+                                                                                value={selectedMember.role}
+                                                                                onValueChange={(role) => {
+                                                                                    field.onChange(
+                                                                                    selectedMembers.map((m) =>
+                                                                                        m.user === member.user._id
+                                                                                        ? {
+                                                                                            ...m,
+                                                                                            role: role as
+                                                                                                | "contributor"
+                                                                                                | "manager"
+                                                                                                | "viewer",
+                                                                                            }
+                                                                                        : m
+                                                                                    )
+                                                                                    )
+                                                                                }}
+                                                                                >
+                                                                                <SelectTrigger>
+                                                                                    <SelectValue placeholder="Select Role" />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    <SelectItem value="manager">
+                                                                                        Manager
+                                                                                    </SelectItem>
+                                                                                    <SelectItem value="contributor">
+                                                                                        Contributor
+                                                                                    </SelectItem>
+                                                                                    <SelectItem value="viewer">
+                                                                                        Viewer
+                                                                                    </SelectItem>
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                        )}
+                                                                    </div>
+                                                                )
+                                                            })
+                                                        }
+                                                    </div>
+                                                </PopoverContent>
+                                            </Popover>
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
-                                )
-                            )}
-                        /> */}
+                                );
+                            }}
+                        />
+                        <DialogFooter>
+                            <Button type="submit" >
+                                Create Project
+                            </Button>
+                        </DialogFooter>
 
                     </form>
                 </Form>
