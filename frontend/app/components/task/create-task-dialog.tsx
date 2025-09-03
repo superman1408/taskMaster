@@ -4,7 +4,7 @@ import type { ProjectMemberRole, User } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -14,6 +14,8 @@ import { Button } from "../ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
+import { Checkbox } from "../ui/checkbox";
+import { toast } from "sonner";
 
 
 
@@ -48,6 +50,25 @@ export const CreateTaskDialog = ({
 
     const onSubmit = (value: CreateTaskFormData) => { 
         console.log(value);
+        mutate(
+            {
+                projectId,
+                taskData: value,
+            },
+            {
+                onSuccess: () => { 
+                    toast.success("Task created successfully");
+                    form.reset();
+                    onOpenChange(false);
+                },
+                onError: (error: any) => {
+                    const errorMessage = error.response.data.message;
+                    toast.error(errorMessage);
+                    console.log(error);
+                },
+            }
+            
+        );
     };
 
 
@@ -157,6 +178,7 @@ export const CreateTaskDialog = ({
                                             </FormItem>
                                         )}
                                     />
+                                    </div>
 
 
                                     <FormField
@@ -208,8 +230,8 @@ export const CreateTaskDialog = ({
                                     
 
                                     <FormField
-                                    control={form.control}
-                                    name="assignees"
+                                        control={form.control}
+                                        name="assignees"
                                         render={({ field }) => {
                                             const selectedMembers = field.value || [];
 
@@ -224,29 +246,76 @@ export const CreateTaskDialog = ({
                                                                     variant="outline"
                                                                     className="w-full justify-start text-left font-normal min-h-11"
                                                                 >
-                                                                    {/* {
-                                                                        selectedMembers.length === 0 ? (
-                                                                            <span className="text-muted-foreground">Select assignees</span>
+                                                                    {selectedMembers.length === 0 ? (
+                                                                        <span className="text-muted-foreground">
+                                                                            Select assignees
+                                                                        </span>
+                                                                    ) : selectedMembers.length <= 2 ? (
+                                                                            selectedMembers.map((m) => {
+                                                                                const member = projectMembers.find(
+                                                                                    (wm) => wm.user._id === m
+                                                                                );
+                                                                                return `${member?.user.name}`;
+                                                                            })
+                                                                            .join(", ")
                                                                         ) : (
-                                                                                selectedMembers.length <= 2 ? (
-                                                                                    selectedMembers.map((m) => {})
-                                                                                ) : (
-                                                                                        `${selectedMembers.length} assignees selected`
-                                                                                )
-                                                                        )
-                                                                    } */}
-                                                                    hi
+                                                                                `${selectedMembers.length} assignees selected`
+                                                                    )}
                                                                 </Button>
                                                             </PopoverTrigger>
+                                                            <PopoverContent
+                                                                className="w-sm max-h-60 overflow-y-auto p-2"
+                                                                align="start"
+                                                            >
+                                                                <div className="flex flex-col gap-2">
+                                                                    {projectMembers.map((member) => {
+                                                                        const selectedMember = selectedMembers.find(
+                                                                            (m) => m === member.user?._id
+                                                                        );
+                                                                        return (
+                                                                            <div key={member.user._id} className="flex items-center gap-2 p-2 boarder rounded">
+                                                                                <Checkbox
+                                                                                    checked={!!selectedMember}
+                                                                                    onCheckedChange={(checked) => {
+                                                                                        if (checked) {
+                                                                                            field.onChange([
+                                                                                            ...selectedMembers,
+                                                                                            member.user._id
+                                                                                        ]);
+                                                                                        } else {
+                                                                                            field.onChange(
+                                                                                                selectedMembers.filter(
+                                                                                                    (m) => m !== member.user._id
+                                                                                                )
+                                                                                            );
+                                                                                        }
+                                                                                        
+                                                                                    }}
+                                                                                    id={`member-${member.user._id}`}
+                                                                                />
+                                                                                <span className="truncate flex-1">{member.user.name}</span>
+                                                                            </div>
+                                                                        )
+                                                                    })}
+                                                                </div>
+                                                            </PopoverContent>
                                                         </Popover>
                                                     </FormControl>
+                                                    <FormMessage />
                                                 </FormItem>
                                             )
                                         }}
-                                />
-                                </div>
+                                    />
+                                
                             </div>
                         </div>
+
+
+                        <DialogFooter>
+                            <Button type="submit" disabled={isPending}>
+                                {isPending ? "Creating..." : "Create Task"}
+                            </Button>
+                        </DialogFooter>
                     </form>
                 </Form>
             </DialogContent>
