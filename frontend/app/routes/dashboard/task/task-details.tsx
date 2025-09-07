@@ -1,8 +1,14 @@
 import { BackButton } from '@/components/back-button';
 import { Loader } from '@/components/loader';
+import { CommentSection } from '@/components/task/comment-section';
+import { SubTaskDetails } from '@/components/task/sub-tasks';
+import { TaskActivity } from '@/components/task/task-activity';
+import { TaskAssigneesSelector } from '@/components/task/task-assignees-selector';
 import TaskDescription from '@/components/task/task-description';
+import { TaskPrioritySelector } from '@/components/task/task-priority-selector';
 import { TaskStatusSelector } from '@/components/task/task-status-selector';
 import TaskTitle from '@/components/task/task-title';
+import { Watchers } from '@/components/task/watchers';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useTaskByIdQuery } from '@/hooks/use-task';
@@ -12,6 +18,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Eye, EyeOff } from 'lucide-react';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router';
+import { any } from 'zod';
 
 const TaskDetails = () => {
     const { user } = useAuth();
@@ -174,8 +181,33 @@ const TaskDetails = () => {
 
                             <TaskDescription description={task.description || ""} taskId={task._id} />
                         </div>
+
+
+                        <TaskAssigneesSelector
+                            task={task}
+                            assignees={task.assignees}
+                            projectMembers={project.members as any}
+                        />
+
+                        <TaskPrioritySelector
+                            priority={task.priority}
+                            taskId={task._id}
+                        />
+
+                        <SubTaskDetails subTasks={task.subtasks || []} taskId={task._id} />
                     </div>
+
+
+                    <CommentSection taskId={task._id} members={project.members as any} />
                 </div>
+
+
+                {/* right side activities display */}
+                    <div className="w-full">
+                        <Watchers watchers={task.watchers || []} />
+
+                        <TaskActivity resourceId={task._id} />
+                    </div>
             </div>
         </div>
     )

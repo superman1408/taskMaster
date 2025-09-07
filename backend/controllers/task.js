@@ -274,6 +274,8 @@ const updateTaskStatus = async (req, res) => {
 
 
 const updateTaskAssignees = async (req, res) => {
+  console.log("You are updating task Assignees");
+  
   try {
     const { taskId } = req.params;
     const { assignees } = req.body;
@@ -698,4 +700,9 @@ export {
   updateTaskTitle,
   updateTaskDescription,
   updateTaskStatus,
+  updateTaskAssignees,
+  updateTaskPriority,
+  addSubTask,
+  updateSubTask,
+  getActivityByResourceId,
 };

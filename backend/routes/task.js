@@ -9,6 +9,11 @@ import {
   updateTaskTitle,
   updateTaskDescription,
   updateTaskStatus,
+  updateTaskAssignees,
+  updateTaskPriority,
+  addSubTask,
+  updateSubTask,
+  getActivityByResourceId,
 } from "../controllers/task.js";
 import authMiddleware from "../middleware/auth-middleware.js";
 import { taskSchema } from "../libs/validate-schema.js";
@@ -27,6 +32,28 @@ router.post(
         body: taskSchema
     }),
     createTask
+);
+
+
+router.post(
+  "/:taskId/add-subtask",
+  authMiddleware,
+  validateRequest({
+    params: z.object({ taskId: z.string() }),
+    body: z.object({ title: z.string() }),
+  }),
+  addSubTask
+);
+
+
+router.put(
+  "/:taskId/update-subtask/:subTaskId",
+  authMiddleware,
+  validateRequest({
+    params: z.object({ taskId: z.string(), subTaskId: z.string() }),
+    body: z.object({ completed: z.boolean() }),
+  }),
+  updateSubTask
 );
 
 
@@ -64,6 +91,28 @@ router.put(
 );
 
 
+router.put(
+  "/:taskId/assignees",
+  authMiddleware,
+  validateRequest({
+    params: z.object({ taskId: z.string() }),
+    body: z.object({ assignees: z.array(z.string()) }),
+  }),
+  updateTaskAssignees
+);
+
+
+router.put(
+  "/:taskId/priority",
+  authMiddleware,
+  validateRequest({
+    params: z.object({ taskId: z.string() }),
+    body: z.object({ priority: z.string() }),
+  }),
+  updateTaskPriority
+);
+
+
 router.get(
     "/:taskId",
     authMiddleware,
@@ -73,6 +122,16 @@ router.get(
         }),
     }),
     getTaskById
+);
+
+
+router.get(
+  "/:resourceId/activity",
+  authMiddleware,
+  validateRequest({
+    params: z.object({ resourceId: z.string() }),
+  }),
+  getActivityByResourceId
 );
 
 
