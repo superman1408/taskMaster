@@ -711,4 +711,7 @@ export {
   getActivityByResourceId,
   getCommentsByTaskId,
   addComment,
+  watchTask,
+  achievedTask,
+  getMyTasks,
 };

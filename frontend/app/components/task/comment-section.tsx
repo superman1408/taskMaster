@@ -6,6 +6,8 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { useAddCommentMutation, useGetCommentsByTaskIdQuery } from "@/hooks/use-task";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { formatDistanceToNow } from "date-fns";
 
 
 
@@ -47,8 +49,29 @@ export const CommentSection = ({ taskId, members }: { taskId: string; members: U
                 {
                     comments?.length > 0 ? (
                         comments.map((comment) => (
-                            <div key={comment._id}>
-                                <p>{comment.text}</p>
+                            <div key={comment._id} className="flex gap-4 py-2">
+                                <Avatar className="size-8">
+                                    <AvatarImage src={comment.author.profilePicture} />
+                                    <AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="font-medium text-sm">
+                                            {comment.author.name}
+                                        </span>
+
+                                        <span className="text-xs text-muted-foreground">
+                                            {
+                                                formatDistanceToNow(comment.createdAt, {
+                                                    addSuffix: true,
+                                                })
+                                            }
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground">{comment.text}</p>
+                                </div>
+                                
                         </div>
                     ))
                     ) : (

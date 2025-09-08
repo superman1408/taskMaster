@@ -16,6 +16,9 @@ import {
   getActivityByResourceId,
   getCommentsByTaskId,
   addComment,
+  watchTask,
+  achievedTask,
+  getMyTasks,
 } from "../controllers/task.js";
 import authMiddleware from "../middleware/auth-middleware.js";
 import { taskSchema } from "../libs/validate-schema.js";
@@ -56,6 +59,26 @@ router.post(
     body: z.object({ text: z.string() }),
   }),
   addComment
+);
+
+
+router.post(
+  "/:taskId/watch",
+  authMiddleware,
+  validateRequest({
+    params: z.object({ taskId: z.string() }),
+  }),
+  watchTask
+);
+
+
+router.post(
+  "/:taskId/achieved",
+  authMiddleware,
+  validateRequest({
+    params: z.object({ taskId: z.string() }),
+  }),
+  achievedTask
 );
 
 
@@ -155,6 +178,16 @@ router.get(
     params: z.object({ taskId: z.string() }),
   }),
   getCommentsByTaskId
+);
+
+
+router.get(
+  "/taskId/my-task",
+  authMiddleware,
+  validateRequest({
+    params: z.object({ taskId: z.string() }),
+  }),
+  getMyTasks
 );
 
 
