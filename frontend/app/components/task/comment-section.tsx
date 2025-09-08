@@ -1,5 +1,11 @@
-import type { User } from "@/types";
+import type { Comment, User } from "@/types";
 import { useState } from "react";
+import { ScrollArea } from "../ui/scroll-area";
+import { Separator } from "../ui/separator";
+import { Textarea } from "../ui/textarea";
+import { Button } from "../ui/button";
+import { useAddCommentMutation, useGetCommentsByTaskIdQuery } from "@/hooks/use-task";
+import { toast } from "sonner";
 
 
 
@@ -7,14 +13,70 @@ export const CommentSection = ({ taskId, members }: { taskId: string; members: U
 
     const [newComment, setNewComment] = useState("");
 
-    // const { mutate, addComment, isPending } = useAddCommentMutation();
+    const { mutate: addComment, isPending } = useAddCommentMutation();
 
-    const handleAddComment = () => { };
+    const { data: comments, isLoading } = useGetCommentsByTaskIdQuery(taskId) as {
+        data: Comment[];
+        isLoading: boolean;
+    };
+
+    const handleAddComment = () => { 
+        if (!newComment.trim()) return;
+
+        addComment({ taskId, text: newComment },
+            {
+                onSuccess: () => { 
+                    setNewComment("");
+                    toast.success("Comment added successfully");
+                },
+                onError: (error: any) => {
+                    console.log(error);
+                    const errorMessage = error.response.data.message;
+                    toast.error(errorMessage);
+                },
+            },
+        );
+    };
 
 
     return (
         <div className="bg-card rounded-lg p-6 shadow-sm">
-            <h3 className="text-lg font-medium mb-4">Comment Section</h3>
+            <h3 className="text-lg font-medium mb-4">Comments</h3>
+
+            <ScrollArea className="h-[300px] mb-4">
+                {
+                    comments?.length > 0 ? (
+                        comments.map((comment) => (
+                            <div key={comment._id}>
+                                <p>{comment.text}</p>
+                        </div>
+                    ))
+                    ) : (
+                    <div className="flex items-center justify-center py-8">
+                        <p className="text-sm text-muted-foreground">No comment yet</p>
+                    </div>  
+                    )
+                }
+            </ScrollArea>
+
+            <Separator className="my-4" />
+            
+            <div className="mt-4">
+                <Textarea
+                    placeholder="Add a comment"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                />
+
+                <div className="flex justify-end mt-4">
+                    <Button
+                        disabled={!newComment.trim() || isPending}
+                        onClick={handleAddComment}
+                    >
+                        Post Comment
+                    </Button>
+                </div>
+            </div>
         </div>
     )
 };

@@ -151,3 +151,24 @@ export type ActionType =
   | "removed_member"
   | "joined_workspace"
   | "added_attachment";
+
+
+
+export interface CommentReaction {
+  emoji: string;
+  user: User;
+}
+
+export interface Comment {
+  _id: string;
+  author: User;
+  text: string;
+  createdAt: Date;
+  reactions?: CommentReaction[];
+  attachments?: {
+    fileName: string;
+    fileUrl: string;
+    fileType?: string;
+    fileSize?: number;
+  }[];
+}

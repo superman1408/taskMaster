@@ -493,6 +493,8 @@ const getActivityByResourceId = async (req, res) => {
 
 
 const getCommentsByTaskId = async (req, res) => {
+  console.log("You just triggered get comment here");
+  
   try {
     const { taskId } = req.params;
 
@@ -511,6 +513,8 @@ const getCommentsByTaskId = async (req, res) => {
 
 
 const addComment = async (req, res) => {
+  console.log("you just triggered add comment");
+  
   try {
     const { taskId } = req.params;
     const { text } = req.body;
@@ -705,4 +709,6 @@ export {
   addSubTask,
   updateSubTask,
   getActivityByResourceId,
+  getCommentsByTaskId,
+  addComment,
 };
