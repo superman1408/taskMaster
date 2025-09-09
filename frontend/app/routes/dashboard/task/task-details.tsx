@@ -11,13 +11,14 @@ import TaskTitle from '@/components/task/task-title';
 import { Watchers } from '@/components/task/watchers';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useTaskByIdQuery } from '@/hooks/use-task';
+import { useArchivedTaskMutation, useTaskByIdQuery, useWatchTaskMutation } from '@/hooks/use-task';
 import { useAuth } from '@/provider/auth-context';
 import type { Project, Task } from '@/types';
 import { formatDistanceToNow } from 'date-fns';
 import { Eye, EyeOff } from 'lucide-react';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router';
+import { toast } from 'sonner';
 import { any } from 'zod';
 
 const TaskDetails = () => {
@@ -40,6 +41,11 @@ const TaskDetails = () => {
     };
 
 
+    const { mutate: watchTask, isPending: isWatching } = useWatchTaskMutation();
+
+    const { mutate: archived, isPending: isArchived } = useArchivedTaskMutation();
+
+
 
     if (isLoading) {
         return (
@@ -60,7 +66,7 @@ const TaskDetails = () => {
 
 
     const { task, project } = data;
-    const isWatching = task?.watchers?.some(
+    const isUserWatching = task?.watchers?.some(
         (watcher) => watcher._id.toString() === user?._id.toString()
     );
 
@@ -72,10 +78,34 @@ const TaskDetails = () => {
     const members = task?.assignees || [];
 
 
-    const handleWatchTask = () => { };
+    const handleWatchTask = () => { 
+        watchTask(
+            { taskId: task._id },
+            {
+                onSuccess: () => { 
+                    toast.success("Task watched");
+                },
+                onError: () => {
+                    toast.error("Failed to watch task");
+                },
+            },
+        );
+    };
 
 
-    const handleArchivedTask = () => { };
+    const handleArchivedTask = () => { 
+        archived(
+            { taskId: task._id },
+            {
+                onSuccess: () => { 
+                    toast.success("Task archived");
+                },
+                onError: () => {
+                    toast.error("Failed to archived task");
+                },
+            },
+        );
+    };
 
 
 
@@ -118,7 +148,7 @@ const TaskDetails = () => {
                         size="sm"
                         onClick={handleArchivedTask}
                         className='w-fit'
-                        // disabled={isArchived}
+                        disabled={isArchived}
                     >
                         {task.isArchived ? "Unarchive" : "Archive"}
                     </Button>

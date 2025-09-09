@@ -630,7 +630,7 @@ const watchTask = async (req, res) => {
 };
 
 
-const achievedTask = async (req, res) => {
+const archivedTask = async (req, res) => {
   try {
     const { taskId } = req.params;
 
@@ -659,14 +659,14 @@ const achievedTask = async (req, res) => {
         message: "You are not a member of this project",
       });
     }
-    const isAchieved = task.isArchived;
+    const isArchived = task.isArchived;
 
-    task.isArchived = !isAchieved;
+    task.isArchived = !isArchived;
     await task.save();
 
     // record activity
     await recordActivity(req.user._id, "updated_task", "Task", taskId, {
-      description: `${isAchieved ? "unarchive" : "achieved"} task ${
+      description: `${isArchived ? "unarchive" : "archived"} task ${
         task.title
       }`,
     });
@@ -712,6 +712,6 @@ export {
   getCommentsByTaskId,
   addComment,
   watchTask,
-  achievedTask,
+  archivedTask,
   getMyTasks,
 };

@@ -8,6 +8,7 @@ import { useAddCommentMutation, useGetCommentsByTaskIdQuery } from "@/hooks/use-
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatDistanceToNow } from "date-fns";
+import { Loader } from "../loader";
 
 
 
@@ -38,6 +39,13 @@ export const CommentSection = ({ taskId, members }: { taskId: string; members: U
                 },
             },
         );
+    };
+
+
+    if (isLoading) {
+        <div>
+            <Loader />
+        </div>
     };
 
 

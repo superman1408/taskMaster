@@ -17,7 +17,7 @@ import {
   getCommentsByTaskId,
   addComment,
   watchTask,
-  achievedTask,
+  archivedTask,
   getMyTasks,
 } from "../controllers/task.js";
 import authMiddleware from "../middleware/auth-middleware.js";
@@ -73,12 +73,12 @@ router.post(
 
 
 router.post(
-  "/:taskId/achieved",
+  "/:taskId/archived",
   authMiddleware,
   validateRequest({
     params: z.object({ taskId: z.string() }),
   }),
-  achievedTask
+  archivedTask
 );
 
 
@@ -182,7 +182,7 @@ router.get(
 
 
 router.get(
-  "/taskId/my-task",
+  "/:taskId/my-task",
   authMiddleware,
   validateRequest({
     params: z.object({ taskId: z.string() }),
