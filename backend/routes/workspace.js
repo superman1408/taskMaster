@@ -34,7 +34,7 @@ router.get("/:workspaceId/projects", authMiddleware, getWorkspaceProjects);
 router.get("/:workspaceId/projects/:projectId", authMiddleware, getProjectDetails);
 
 
-router.get("/:workspace/stats", authMiddleware, getWorkspaceStats);
+router.get("/:workspaceId/stats", authMiddleware, getWorkspaceStats);
 
 
 export default router;

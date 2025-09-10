@@ -1,8 +1,7 @@
-import { Button } from '@/components/ui/button';
 import { Loader } from '@/components/loader';
 import { useAuth } from '@/provider/auth-context';
-import React, { useState } from 'react'
-import { Navigate, Outlet, useNavigate } from 'react-router';
+import { useState } from 'react'
+import { Navigate, Outlet } from 'react-router';
 import { Header } from '@/components/layout/header';
 import type { Workspace } from '@/types';
 import { SidebarComponent } from '@/components/layout/sidebar-component';
