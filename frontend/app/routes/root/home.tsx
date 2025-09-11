@@ -206,6 +206,7 @@ const Homepage = () => {
         <div className="flex flex-col items-center gap-2">
           <div className="flex gap-6">
             <a
+              title="linkedIn"
               href="https://in.linkedin.com/company/ashkam-energy"
               target="_blank"
               rel="noopener noreferrer"
@@ -214,12 +215,14 @@ const Homepage = () => {
               <Linkedin size={20} />
             </a>
             <a
+              title="email"
               href="mailto:info@ashkam.in"
               className="hover:text-blue-400 transition-colors"
             >
               <Mail size={20} />
             </a>
             <a
+              title="website"
               href="https://ashkam.in"
               target="_blank"
               rel="noopener noreferrer"
