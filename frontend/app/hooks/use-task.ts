@@ -218,10 +218,9 @@ export const useArchivedTaskMutation = () => {
 };
 
 
-export const getMyTasksQuery = () => { 
-
-    return useQuery({
-        queryKey: ["my-tasks", "user"],
-        queryFn: () => fetchData(`/tasks/my-task`),
-    });
+export const useGetMyTasksQuery = () => {
+  return useQuery({
+    queryKey: ["my-tasks", "user"],
+    queryFn: () => fetchData("/tasks/my-tasks"),
+  });
 };

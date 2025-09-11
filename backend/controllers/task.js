@@ -683,10 +683,15 @@ const archivedTask = async (req, res) => {
 
 
 const getMyTasks = async (req, res) => {
+  console.log("Get all my task here");
+  
   try {
     const tasks = await Task.find({ assignees: { $in: [req.user._id] } })
       .populate("project", "title workspace")
       .sort({ createdAt: -1 });
+    // console.log("REQ USER", req.user._id);
+    
+    // console.log("ALL TASKS", tasks);
 
     res.status(200).json(tasks);
   } catch (error) {

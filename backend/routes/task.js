@@ -150,6 +150,16 @@ router.put(
 
 
 router.get(
+  "/my-tasks",
+  authMiddleware,
+  // validateRequest({
+  //   params: z.object({ taskId: z.string() }),
+  // }),
+  getMyTasks
+);
+
+
+router.get(
     "/:taskId",
     authMiddleware,
     validateRequest({
@@ -182,7 +192,7 @@ router.get(
 
 
 router.get(
-  "/:taskId/my-task",
+  "/my-tasks",
   authMiddleware,
   validateRequest({
     params: z.object({ taskId: z.string() }),
