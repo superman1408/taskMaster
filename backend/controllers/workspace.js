@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 import { sendEmail } from "../libs/send-email.js";
 import { recordActivity } from "../libs/index.js";
 
+
+
 const createWorkspace = async (req, res) => {
   console.log("Create Workspace is working here");
 
