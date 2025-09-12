@@ -135,12 +135,12 @@ export function meta({}: Route.MetaArgs) {
 
 const Homepage = () => {
   return (
-    <div className="relative w-full h-screen flex flex-col bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white">
+    <div className="relative w-full h-screen flex flex-col bg-gradient-to-br from-blue-50 via-indigo-700 to-purple-800 text-white">
       {/* Header */}
       <header className="absolute top-0 left-0 w-full flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
           <img src="/logoT.png" alt="Ashkam Energy Logo" className="w-35 h-12" />
-          <span className="text-xl font-bold text-white">
+          <span className="text-sm font-bold text-white">
             Ashkam Energy Pvt Ltd
           </span>
         </div>
@@ -194,7 +194,7 @@ const Homepage = () => {
           <Button
             asChild
             variant="outline"
-            className="px-6 py-3 text-lg rounded-2xl border-2 border-white text-white hover:bg-yellow-300 hover:border-blue-300 shadow-lg transition-all"
+            className="px-6 py-3 text-lg rounded-2xl border-2 border-white text-gray-300 hover:bg-yellow-300 hover:border-blue-300 shadow-lg transition-all"
           >
             <Link to="/sign-up">Sign Up</Link>
           </Button>

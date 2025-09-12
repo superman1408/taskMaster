@@ -46,10 +46,8 @@ export const useInviteMemberMutation = () => {
 
 export const useAcceptInviteByTokenMutation = () => {
   return useMutation({
-    mutationFn: (token: string) =>
-      postData(`/workspaces/accept-invite-token`, {
-        token,
-      }),
+    mutationFn: ({token} : { token: string}) =>
+      postData(`/workspaces/accept-invite-token`, { token }),
   });
 };
 
