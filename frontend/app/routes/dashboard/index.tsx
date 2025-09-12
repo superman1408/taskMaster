@@ -1,7 +1,7 @@
 import { Loader } from '@/components/loader';
 import { useGetWorkspaceStatsQuery } from '@/hooks/use-workspace';
 import React from 'react';
-import { useSearchParams } from 'react-router';
+import { useParams, useSearchParams } from 'react-router';
 
 import type {
   Project,
@@ -20,6 +20,8 @@ import { UpcomingTasks } from '@/components/upcoming-tasks';
 const Dashboard = () => {
   const [searchParams] = useSearchParams();
   const workspaceId = searchParams.get("workspaceId")
+  // const { workspaceId } = useParams();
+
 
   const { data, isPending } = useGetWorkspaceStatsQuery(workspaceId!) as {
     data: {
