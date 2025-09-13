@@ -54,13 +54,38 @@ const getWorkspaces = async (req, res) => {
   }
 };
 
+// const getWorkspaceDetails = async (req, res) => {
+//   try {
+//     const { workspaceId } = req.params;
+
+//     const workspace = await Workspace.findOne({
+//       _id: workspaceId,
+//       "members.user": req.user._id,
+//     }).populate("members.user", "name email profilePicture");
+
+//     if (!workspace) {
+//       return res.status(404).json({
+//         message: "Workspace not found",
+//       });
+//     }
+
+//     res.status(200).json(workspace);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({
+//       message: "Internal server error",
+//     });
+//   }
+// };
+
+
 const getWorkspaceDetails = async (req, res) => {
   try {
     const { workspaceId } = req.params;
 
     const workspace = await Workspace.findOne({
       _id: workspaceId,
-      "members.user": req.user._id,
+      "members.user": req.user._id, // ensures the requesting user is part of this workspace
     }).populate("members.user", "name email profilePicture");
 
     if (!workspace) {
@@ -77,6 +102,9 @@ const getWorkspaceDetails = async (req, res) => {
     });
   }
 };
+
+
+
 
 const getWorkspaceProjects = async (req, res) => {
   console.log("Get Workspace Projects");

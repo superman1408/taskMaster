@@ -27,6 +27,7 @@ export const useGetWorkspaceStatsQuery = (workspaceId: string) => {
   return useQuery({
     queryKey: ["workspace", workspaceId, "stats"],
     queryFn: async () => fetchData(`/workspaces/${workspaceId}/stats`),
+    enabled: !!workspaceId,
   });
 };
 
@@ -34,8 +35,20 @@ export const useGetWorkspaceDetailsQuery = (workspaceId: string) => {
   return useQuery({
     queryKey: ["workspace", workspaceId, "details"],
     queryFn: async () => fetchData(`/workspaces/${workspaceId}`),
+    enabled: !!workspaceId, //Only fetch if workspaceId is valid
   });
 };
+
+
+// export const useGetWorkspaceDetailsQuery = (workspaceId: string | null) => {
+//   const queryKey: QueryKey = ["workspace", workspaceId];
+
+//   return useQuery({
+//     queryKey,
+//     queryFn: () => fetchData<Workspace>(`/workspaces/${workspaceId}`),
+//     enabled: !!workspaceId, // Only fetch if workspaceId is valid
+//   });
+// };
 
 export const useInviteMemberMutation = () => {
   return useMutation({
