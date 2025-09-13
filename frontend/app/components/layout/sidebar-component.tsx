@@ -47,7 +47,7 @@ export const SidebarComponent = ({ currentWorkspace }: { currentWorkspace: Works
         },
         {
             title: "Achieved",
-            href: `/achieved`,
+            href: `/archived-tasks`,
             icon: CheckCircle2,
         },
         {
