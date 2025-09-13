@@ -19,6 +19,7 @@ import {
   watchTask,
   archivedTask,
   getMyTasks,
+  getArchivedTasks,
 } from "../controllers/task.js";
 import authMiddleware from "../middleware/auth-middleware.js";
 import { taskSchema } from "../libs/validate-schema.js";
@@ -149,6 +150,9 @@ router.put(
 );
 
 
+router.get("/archived-tasks", authMiddleware, getArchivedTasks);
+
+
 router.get(
   "/my-tasks",
   authMiddleware,
@@ -199,6 +203,9 @@ router.get(
   }),
   getMyTasks
 );
+
+
+
 
 
 export default router;

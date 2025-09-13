@@ -703,6 +703,27 @@ const getMyTasks = async (req, res) => {
 };
 
 
+// Get all archived tasks for the logged-in user
+const getArchivedTasks = async (req, res) => {
+  console.log("You want to get archived task");
+  
+  try {
+    const archivedTasks = await Task.find({
+      isArchived: true,
+      assignees: { $in: [req.user._id] }, // only tasks assigned to logged-in user
+    })
+      .populate("project", "title workspace") // optional: populate project details
+      .populate("createdBy", "name email profilePicture") // optional: populate creator
+      .sort({ updatedAt: -1 }); // latest archived first
+
+    res.status(200).json(archivedTasks);
+  } catch (error) {
+    console.error("Error fetching archived tasks:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 export {
   createTask,
   getTaskById,
@@ -719,4 +740,5 @@ export {
   watchTask,
   archivedTask,
   getMyTasks,
+  getArchivedTasks,
 };

@@ -224,3 +224,11 @@ export const useGetMyTasksQuery = () => {
     queryFn: () => fetchData("/tasks/my-tasks"),
   });
 };
+
+
+export const useGetArchivedTasksQuery = () => { 
+    return useQuery({
+        queryKey: ["archivedTasks"],
+        queryFn: () => fetchData("/tasks/archived-tasks"),
+    });
+};
