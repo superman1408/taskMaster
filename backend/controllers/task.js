@@ -739,7 +739,6 @@ const deleteTask = async (req, res) => {
   // });
 
   try {
-
     const { taskId } = req.params;
 
     const task = await Task.findById(taskId);
@@ -768,15 +767,16 @@ const deleteTask = async (req, res) => {
       });
     }
 
+    // Remove task reference from project
+    await Project.findByIdAndUpdate(task.project, {
+      $pull: { tasks: task._id },
+    });
 
     await Task.findByIdAndDelete(taskId);
-
 
     res.status(200).json({
       message: "Task deleted successfully",
     });
-
-
   } catch (error) {
     console.log(error);
     res.status(500).json({
