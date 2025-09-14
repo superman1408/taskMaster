@@ -1,38 +1,45 @@
-import React from 'react';
-import { useGetArchivedTasksQuery } from "@/hooks/use-task";
-import { Loader } from '@/components/loader';
+// import React from 'react';
+// import { useGetArchivedTasksQuery } from "@/hooks/use-task";
+// import { Loader } from '@/components/loader';
 
 
-const ArchivedTask = () => {
-  const { data: archivedTasks, isLoading, isError } = useGetArchivedTasksQuery();
+// const ArchivedTask = () => {
+//   const { data: archivedTasks, isLoading, isError } = useGetArchivedTasksQuery();
 
-  console.log(archivedTasks);
+//   console.log(archivedTasks);
   
 
-  if (isLoading) {
-    return <Loader />
-  }
+//   if (isLoading) {
+//     return <Loader />
+//   }
 
 
-  return (
-    <div>ArchivedTask</div>
-  )
-}
+//   return (
+//     <div className='flex justify-center items-center h-full'>
+//       <span className='text-xl font-bold text-blue-600'>Archived Tasks</span>
+//     </div>
+//   )
+// }
 
-export default ArchivedTask;
+// export default ArchivedTask;
 
 
 
 // import { Loader } from "@/components/loader";
 // import { useGetArchivedTasksQuery } from "@/hooks/use-task";
+// import type { Task } from "@/types";
 
-// const ArchivedTasksPage = () => {
-//   const { data: archivedTasks, isLoading, isError } = useGetArchivedTasksQuery();
+// const ArchivedTask = () => {
+//   const { data: archivedTasks, isLoading, isError } = useGetArchivedTasksQuery() as {
+//     data: Task[];
+//     isLoading: boolean;
+//     isError: any;
+//   };
 
 //   if (isLoading) return <Loader />;
 //   if (isError) return <div>Failed to load archived tasks</div>;
 
-//   if (!archivedTasks || archivedTasks.length === 0) {
+//   if (!archivedTasks) {
 //     return <div>No archived tasks found</div>;
 //   }
 
@@ -56,4 +63,62 @@ export default ArchivedTask;
 //   );
 // };
 
-// export default ArchivedTasksPage;
+// export default ArchivedTask;
+
+
+import { Loader } from "@/components/loader";
+import { useGetArchivedTasksQuery } from "@/hooks/use-task";
+import type { Task } from "@/types";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
+const ArchivedTask = () => {
+  const { data: archivedTasks, isLoading, isError } =
+    useGetArchivedTasksQuery() as {
+      data: Task[];
+      isLoading: boolean;
+      isError: any;
+    };
+
+  if (isLoading) return <Loader />;
+  if (isError) return <div>Failed to load archived tasks</div>;
+
+  if (!archivedTasks || archivedTasks.length === 0) {
+    return <div>No archived tasks found</div>;
+  }
+
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">Archived Tasks</h1>
+
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {archivedTasks.map((task) => (
+          <Card
+            key={task._id}
+            className="hover:shadow-md transition-all duration-300"
+          >
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">{task.title}</CardTitle>
+                <Badge variant="secondary" className="bg-gray-200 text-gray-700">
+                  Archived
+                </Badge>
+              </div>
+              <span className="text-xs text-gray-400">
+                {new Date(task.updatedAt).toLocaleDateString()}
+              </span>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-600">
+                {task.description || "No description provided"}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ArchivedTask;
+
