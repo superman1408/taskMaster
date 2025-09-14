@@ -603,21 +603,29 @@ const watchTask = async (req, res) => {
 
     const isWatching = task.watchers.includes(req.user._id);
 
+    let action = "";
+
     if (!isWatching) {
       task.watchers.push(req.user._id);
+      action = "watched";
     } else {
       task.watchers = task.watchers.filter(
         (watcher) => watcher.toString() !== req.user._id.toString()
       );
+      action = "unwatched";
     }
 
     await task.save();
 
     // record activity
+    // await recordActivity(req.user._id, "updated_task", "Task", taskId, {
+    //   description: `${
+    //     isWatching ? "stopped watching" : "started watching"
+    //   } task ${task.title}`,
+    // });
+
     await recordActivity(req.user._id, "updated_task", "Task", taskId, {
-      description: `${
-        isWatching ? "stopped watching" : "started watching"
-      } task ${task.title}`,
+      description: `${action} task ${task.title}`,
     });
 
     res.status(200).json(task);
@@ -724,6 +732,60 @@ const getArchivedTasks = async (req, res) => {
 };
 
 
+const deleteTask = async (req, res) => { 
+  console.log("Now you can delete the Task here");
+  // res.status(200).json({
+  //   message: "Task is deleted",
+  // });
+
+  try {
+
+    const { taskId } = req.params;
+
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({
+        message: "Task not found",
+      });
+    }
+
+    const project = await Project.findById(task.project);
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+
+    const isMember = project.members.some(
+      (member) => member.user.toString() === req.user._id.toString()
+    );
+
+    if (!isMember) {
+      return res.status(403).json({
+        message: "You are not a member of this project",
+      });
+    }
+
+
+    await Task.findByIdAndDelete(taskId);
+
+
+    res.status(200).json({
+      message: "Task deleted successfully",
+    });
+
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+
 export {
   createTask,
   getTaskById,
@@ -741,4 +803,5 @@ export {
   archivedTask,
   getMyTasks,
   getArchivedTasks,
+  deleteTask,
 };

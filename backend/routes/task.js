@@ -20,6 +20,7 @@ import {
   archivedTask,
   getMyTasks,
   getArchivedTasks,
+  deleteTask,
 } from "../controllers/task.js";
 import authMiddleware from "../middleware/auth-middleware.js";
 import { taskSchema } from "../libs/validate-schema.js";
@@ -147,6 +148,16 @@ router.put(
     body: z.object({ priority: z.string() }),
   }),
   updateTaskPriority
+);
+
+
+router.delete(
+  "/:taskId/delete",
+  authMiddleware,
+  validateRequest({
+    params: z.object({ taskId: z.string() }),
+  }),
+  deleteTask
 );
 
 
