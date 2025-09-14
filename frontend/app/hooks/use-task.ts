@@ -11,7 +11,7 @@ export const useCreateTaskMutation = () => {
             postData(`tasks/${data.projectId}/create-task`, data.taskData),
         onSuccess: (data: any) => {
             queryClient.invalidateQueries({
-                queryKey: ["projectId", data.project],
+                queryKey: ["project", data.project],
             });
             queryClient.invalidateQueries({
                 queryKey: ["task-activity", data._id],

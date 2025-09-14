@@ -49,7 +49,7 @@ export const CreateTaskDialog = ({
     const { mutate, isPending } = useCreateTaskMutation();
 
     const onSubmit = (value: CreateTaskFormData) => { 
-        console.log(value);
+        // console.log(value);
         mutate(
             {
                 projectId,
