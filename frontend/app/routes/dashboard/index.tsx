@@ -23,7 +23,7 @@ const Dashboard = () => {
   // const { workspaceId } = useParams();
 
 
-  const { data, isPending } = useGetWorkspaceStatsQuery(workspaceId!) as {
+  const { data, isPending: isLoading } = useGetWorkspaceStatsQuery(workspaceId!) as {
     data: {
       stats: StatsCardProps;
       taskTrendsData: TaskTrendsData[];
@@ -37,13 +37,7 @@ const Dashboard = () => {
   };
 
 
-  if (isPending) {
-    return (
-      <div>
-        <Loader />
-      </div>
-    )
-  }
+  
 
 
   // if (!data || !workspaceId) return <div>Please select your Workspace</div>;
@@ -61,6 +55,16 @@ const Dashboard = () => {
         </div>
       </div>
     );
+  }
+
+
+
+  if (isLoading) {
+    return (
+      <div>
+        <Loader />
+      </div>
+    )
   }
 
 

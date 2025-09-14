@@ -39,3 +39,16 @@ export const getProjectProgress = (tasks: { status: TaskStatus }[]) => {
     totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
   return progress;
 };
+
+
+// export const getProjectProgress = (tasks: { status: string }[]) => {
+//   if (!tasks || tasks.length === 0) return 0;
+
+//   const completedTasks = tasks.filter(
+//     (task) =>
+//       task.status === "DONE" ||
+//       task.status === "Completed"
+//   ).length;
+
+//   return Math.round((completedTasks / tasks.length) * 100);
+// };

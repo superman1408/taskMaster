@@ -128,7 +128,7 @@ const getWorkspaceProjects = async (req, res) => {
       isArchived: false,
       // members: { $in: [req.user._id] }
     })
-      // .populate("task", "status")
+      .populate("tasks", "status")
       .sort({ createdAt: -1 });
 
     res.status(200).json({ projects, workspace });

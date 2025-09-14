@@ -25,15 +25,20 @@ export const SidebarComponent = ({ currentWorkspace }: { currentWorkspace: Works
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     const navItems = [
-        {
-            title: "Dashboard",
-            href: "/dashboard",
-            icon: LayoutDashboard,
-        },
+        // {
+        //     title: "Dashboard",
+        //     href: "/dashboard",
+        //     icon: LayoutDashboard,
+        // },
         {
             title: "Workspaces",
             href: "/workspaces",
             icon: Users,
+        },
+        {
+            title: "Dashboard",
+            href: "/dashboard",
+            icon: LayoutDashboard,
         },
         {
             title: "My Tasks",

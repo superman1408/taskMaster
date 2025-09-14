@@ -30,13 +30,11 @@ export const ProjectList = ({
                     />
                 ) : (
                         projects.map((project) => {
-                            const projectProgress = 0
 
                             return (
                                 <ProjectCard
                                     key={project._id}
                                     project={project}
-                                    progress={projectProgress}
                                     workspaceId={workspaceId}
                                 />
                             );
