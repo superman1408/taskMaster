@@ -732,11 +732,63 @@ const getArchivedTasks = async (req, res) => {
 };
 
 
-const deleteTask = async (req, res) => { 
+// const deleteTask = async (req, res) => {
+//   console.log("Now you can delete the Task here");
+//   // res.status(200).json({
+//   //   message: "Task is deleted",
+//   // });
+
+//   try {
+//     const { taskId } = req.params;
+
+//     const task = await Task.findById(taskId);
+
+//     if (!task) {
+//       return res.status(404).json({
+//         message: "Task not found",
+//       });
+//     }
+
+//     const project = await Project.findById(task.project);
+
+//     if (!project) {
+//       return res.status(404).json({
+//         message: "Project not found",
+//       });
+//     }
+
+//     const isMember = project.members.some(
+//       (member) => member.user.toString() === req.user._id.toString()
+//     );
+
+//     if (!isMember) {
+//       return res.status(403).json({
+//         message: "You are not a member of this project",
+//       });
+//     }
+
+//     // Remove task reference from project
+//     await Project.findByIdAndUpdate(task.project, {
+//       $pull: { tasks: task._id },
+//     });
+
+//     await Task.findByIdAndDelete(taskId);
+
+//     res.status(200).json({
+//       message: "Task deleted successfully",
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({
+//       message: "Internal server error",
+//     });
+//   }
+// };
+
+
+
+const deleteTask = async (req, res) => {
   console.log("Now you can delete the Task here");
-  // res.status(200).json({
-  //   message: "Task is deleted",
-  // });
 
   try {
     const { taskId } = req.params;
@@ -767,23 +819,51 @@ const deleteTask = async (req, res) => {
       });
     }
 
-    // Remove task reference from project
-    await Project.findByIdAndUpdate(task.project, {
-      $pull: { tasks: task._id },
-    });
+    // Debug logs
+    console.log("Task ID to delete:", task._id.toString());
+    console.log(
+      "Project tasks before delete:",
+      project.tasks.map((t) => t.toString())
+    );
 
+    // Try $pull first
+    let updatedProject = await Project.findByIdAndUpdate(
+      task.project,
+      { $pull: { tasks: task._id } },
+      { new: true }
+    );
+
+    // If still not removed, fallback to manual filter
+    if (
+      updatedProject &&
+      updatedProject.tasks.some((t) => t.toString() === task._id.toString())
+    ) {
+      console.log("⚠️ $pull did not work, applying manual filter...");
+      updatedProject.tasks = updatedProject.tasks.filter(
+        (t) => t.toString() !== task._id.toString()
+      );
+      await updatedProject.save();
+    }
+
+    console.log(
+      "Project tasks after delete:",
+      updatedProject.tasks.map((t) => t.toString())
+    );
+
+    // Delete the task itself
     await Task.findByIdAndDelete(taskId);
 
     res.status(200).json({
       message: "Task deleted successfully",
     });
   } catch (error) {
-    console.log(error);
+    console.error("❌ Delete task error:", error);
     res.status(500).json({
       message: "Internal server error",
     });
   }
 };
+
 
 
 export {
