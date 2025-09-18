@@ -73,7 +73,7 @@ export const SidebarComponent = ({ currentWorkspace }: { currentWorkspace: Works
                         <div className="flex items-center gap-2">
                         <Wrench className="size-6 text-blue-600" />
                         <span className="font-semibold text-lg hidden md:block">
-                            ASHKAM-PMT
+                            Task Master
                         </span>
                         </div>
                     )}
