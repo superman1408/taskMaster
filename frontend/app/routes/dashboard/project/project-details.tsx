@@ -2,6 +2,7 @@
 import { BackButton } from "@/components/back-button";
 import { Loader } from "@/components/loader";
 import { CreateTaskDialog } from "@/components/task/create-task-dialog";
+import { ProjectStatusSelector } from "@/components/project/project-status-selector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,7 @@ const ProjectDetails = () => {
           <BackButton />
           <div className="flex items-center gap-3">
             <h1 className="text-xl md:text-2xl font-bold">{project.title}</h1>
+            <ProjectStatusSelector status={ project.status } projectId={project._id} />
           </div>
           {project.description && (
             <p className="text-sm text-gray-500">{project.description}</p>
