@@ -46,21 +46,43 @@ export const useUpdateTaskTitleMutation = () => {
 };
 
 
-export const useUpdateTaskStatusMutation = () => { 
-    const queryClient = useQueryClient();
+// export const useUpdateTaskStatusMutation = () => { 
+//     const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: (data: { taskId: string; status: TaskStatus }) => 
-            updateData(`/tasks/${data.taskId}/status`, { status: data.status }),
-        onSuccess: (data: any) => {
-            queryClient.invalidateQueries({
-                queryKey: ["task", data._id],
-            });
-            queryClient.invalidateQueries({
-                queryKey: ["task-activity", data._id],
-            });
-        },
-    });
+//     return useMutation({
+//         mutationFn: (data: { taskId: string; status: TaskStatus }) => 
+//             updateData(`/tasks/${data.taskId}/status`, { status: data.status }),
+//         onSuccess: (data: any) => {
+//             queryClient.invalidateQueries({
+//                 queryKey: ["task", data._id],
+//             });
+//             queryClient.invalidateQueries({
+//                 queryKey: ["task-activity", data._id],
+//             });
+//         },
+//     });
+// };
+
+
+export const useUpdateTaskStatusMutation = () => { 
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { taskId: string; status: TaskStatus }) =>
+      updateData(`/tasks/${data.taskId}/status`, { status: data.status }),
+    onSuccess: (data: any) => {
+      // Invalidate the single task
+      queryClient.invalidateQueries({ queryKey: ["task", data._id] });
+
+      // Invalidate related task activity
+      queryClient.invalidateQueries({ queryKey: ["task-activity", data._id] });
+
+      // Invalidate the parent project so its tasks re-fetch
+      if (data.project) {
+        queryClient.invalidateQueries({ queryKey: ["project", data.project] });
+      }
+    },
+  });
 };
 
 

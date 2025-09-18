@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UseProjectQuery } from "@/hooks/use-project";
+import { useUpdateTaskStatusMutation } from "@/hooks/use-task";
 import { getProjectProgress } from "@/lib";
 import { cn } from "@/lib/utils";
 import type { Project, Task, TaskStatus } from "@/types";
@@ -16,6 +17,7 @@ import { format } from "date-fns";
 import { AlertCircle, Calendar, CheckCircle, Clock } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { toast } from "sonner";
 
 const ProjectDetails = () => {
   const { projectId, workspaceId } = useParams<{
@@ -247,6 +249,29 @@ const TaskColumn = ({
 };
 
 const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
+
+  const { mutate, isPending } = useUpdateTaskStatusMutation();
+  
+  
+
+  const handleUpdateStatus = (status: TaskStatus) => {
+    mutate(
+      { taskId: task._id, status },
+      {
+        onSuccess: () => {
+          toast.success(`Marked as ${status}`);
+        },
+        onError: (error: any) => {
+          const errorMessage =
+            error?.response?.data?.message || "Failed to update status";
+          toast.error(errorMessage);
+          console.error(error);
+        },
+      }
+    );
+  };
+
+
   return (
     <Card
       onClick={onClick}
@@ -266,15 +291,13 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
             {task.priority}
           </Badge>
 
-          <div className="flex gap-1">
+          <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
             {task.status !== "To Do" && (
               <Button
                 variant={"ghost"}
                 size={"icon"}
                 className="size-6"
-                onClick={() => {
-                  console.log("mark as to do");
-                }}
+                onClick={() => handleUpdateStatus("To Do")}
                 title="Mark as To Do"
               >
                 <AlertCircle className={cn("size-4")} />
@@ -286,9 +309,7 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
                 variant={"ghost"}
                 size={"icon"}
                 className="size-6"
-                onClick={() => {
-                  console.log("mark as in progress");
-                }}
+                onClick={() => handleUpdateStatus("In Progress")}
                 title="Mark as In Progress"
               >
                 <Clock className={cn("size-4")} />
@@ -300,9 +321,7 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
                 variant={"ghost"}
                 size={"icon"}
                 className="size-6"
-                onClick={() => {
-                  console.log("mark as done");
-                }}
+                onClick={() => handleUpdateStatus("Done")}
                 title="Mark as Done"
               >
                 <CheckCircle className={cn("size-4")} />
@@ -314,7 +333,7 @@ const TaskCard = ({ task, onClick }: { task: Task; onClick: () => void }) => {
       </CardHeader>
 
       <CardContent>
-        <h4 className="ont-medium mb-2">{task.title}</h4>
+        <h4 className="font-medium mb-2">{task.title}</h4>
 
         {task.description && (
           <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
