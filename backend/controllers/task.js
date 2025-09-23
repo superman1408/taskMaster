@@ -4,6 +4,7 @@ import Workspace from "../models/workspace.js";
 import ActivityLog from "../models/activity.js";
 import { recordActivity } from "../libs/index.js";
 import Comment from "../models/comment.js";
+import { authorize } from "../config/config.js";
 
 
 
@@ -803,6 +804,8 @@ const deleteTask = async (req, res) => {
 
     const project = await Project.findById(task.project);
 
+    const workspace = await Workspace.findById(project.workspace);
+
     if (!project) {
       return res.status(404).json({
         message: "Project not found",
@@ -816,6 +819,30 @@ const deleteTask = async (req, res) => {
     if (!isMember) {
       return res.status(403).json({
         message: "You are not a member of this project",
+      });
+    }
+
+
+    const userMemberInfo = workspace.members.find(
+      (member) => member.user.toString() === req.user._id.toString()
+    );
+
+    // if (!userMemberInfo || !["admin", "owner"].includes(userMemberInfo.role)) {
+    //   return res.status(403).json({
+    //     message: "You are not authorized to invite members to this workspace",
+    //   });
+    // }
+
+    const canDeleteTask = authorize(
+      userMemberInfo?.role,
+      "workspaceRoles",
+      "task:delete"
+    );
+
+
+    if (!canDeleteTask) {
+      return res.status(403).json({
+        message: "You are not authorized to delete task to this project, Please contact administrator",
       });
     }
 
@@ -854,7 +881,7 @@ const deleteTask = async (req, res) => {
     await Task.findByIdAndDelete(taskId);
 
     res.status(200).json({
-      message: "Task deleted successfully",
+      message: "✅ Task deleted successfully",
     });
   } catch (error) {
     console.error("❌ Delete task error:", error);
