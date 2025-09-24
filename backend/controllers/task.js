@@ -393,19 +393,78 @@ const addSubTask = async (req, res) => {
 
     const project = await Project.findById(task.project);
 
+    
+
     if (!project) {
       return res.status(404).json({
         message: "Project not found",
       });
     }
 
-    const isMember = project.members.some(
+    const workspace = await Workspace.findById(project.workspace);
+
+    if (!workspace) {
+      return res.status(404).json({
+        message: "Workspace not found",
+      });
+    }
+
+    // const isMember = project.members.some(
+    //   (member) => member.user.toString() === req.user._id.toString()
+    // );
+
+    // if (!isMember) {
+    //   return res.status(403).json({
+    //     message: "You are not a member of this project",
+    //   });
+    // }
+
+    // Find user’s workspace role
+    const userWorkspaceInfo = workspace.members.find(
       (member) => member.user.toString() === req.user._id.toString()
     );
 
-    if (!isMember) {
+    const workspaceRole = userWorkspaceInfo?.role;
+
+    // Check if user is project member OR workspace admin/owner
+    const isProjectMember =
+      project.members.some(
+        (member) => member.user.toString() === req.user._id.toString()
+      ) || ["owner", "admin"].includes(workspaceRole);
+
+    if (!isProjectMember) {
       return res.status(403).json({
-        message: "You are not a member of this project",
+        message: "You are not a member of this project or authorized workspace admin/owner",
+      });
+    }
+
+
+    // Check permissions at workspace level
+    const canAddSubtaskWorkspace = authorize(
+      workspaceRole,
+      "workspaceRoles",
+      "subtask:create"
+    );
+
+    // Find user’s project role
+    const userProjectInfo = project.members.find(
+      (member) => member.user.toString() === req.user._id.toString()
+    );
+
+    // Check permissions at project level
+    const canAddSubtaskProject = authorize(
+      userProjectInfo?.role,
+      "projectRoles",
+      "subtask:create"
+    );
+
+    // Final decision
+    const canAddSubtask = canAddSubtaskWorkspace || canAddSubtaskProject;
+
+    if (!canAddSubtask) {
+      return res.status(403).json({
+        message:
+          "You are not authorized to add subtask. Please contact administrator.",
       });
     }
 
@@ -433,6 +492,57 @@ const addSubTask = async (req, res) => {
 };
 
 
+// Find user’s workspace role
+// const userMemberInfo = workspace.members.find(
+//   (member) => member.user.toString() === req.user._id.toString()
+// );
+
+// const workspaceRole = userMemberInfo?.role;
+
+// // Check if user is project member OR workspace admin/owner
+// const isProjectMember =
+//   project.members.some(
+//     (member) => member.user.toString() === req.user._id.toString()
+//   ) || ["owner", "admin"].includes(workspaceRole);
+
+// if (!isProjectMember) {
+//   return res.status(403).json({
+//     message: "You are not a member of this project or authorized workspace admin/owner",
+//   });
+// }
+
+// ---- Permissions check ----
+
+// Check permissions at workspace level
+// const canAddSubtaskWorkspace = authorize(
+//   workspaceRole,
+//   "workspaceRoles",
+//   "subtask:create"
+// );
+
+// // Find user’s project role
+// const userProjectInfo = project.members.find(
+//   (member) => member.user.toString() === req.user._id.toString()
+// );
+
+// const canAddSubtaskProject = authorize(
+//   userProjectInfo?.role,
+//   "projectRoles",
+//   "subtask:create"
+// );
+
+// // Final decision
+// const canAddSubtask = canAddSubtaskWorkspace || canAddSubtaskProject;
+
+// if (!canAddSubtask) {
+//   return res.status(403).json({
+//     message:
+//       "You are not authorized to add subtask. Please contact administrator.",
+//   });
+// }
+
+
+
 const updateSubTask = async (req, res) => {
   try {
     const { taskId, subTaskId } = req.params;
@@ -443,6 +553,77 @@ const updateSubTask = async (req, res) => {
     if (!task) {
       return res.status(404).json({
         message: "Task not found",
+      });
+    }
+
+    const project = await Project.findById(task.project);
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+
+    const workspace = await Workspace.findById(project.workspace);
+
+    if (!workspace) {
+      return res.status(404).json({
+        message: "Workspace not found",
+      });
+    }
+
+    // Find user’s workspace role
+    // const userMemberInfo = workspace.members.find(
+    //   (member) => member.user.toString() === req.user._id.toString()
+    // );
+
+    // Find user’s workspace role
+    const userWorkspaceInfo = workspace.members.find(
+      (member) => member.user.toString() === req.user._id.toString()
+    );
+
+    const workspaceRole = userWorkspaceInfo?.role;
+
+    // Check if user is project member OR workspace admin/owner
+    const isProjectMember =
+      project.members.some(
+        (member) => member.user.toString() === req.user._id.toString()
+      ) || ["owner", "admin"].includes(workspaceRole);
+
+    if (!isProjectMember) {
+      return res.status(403).json({
+        message:
+          "You are not a member of this project or authorized workspace admin/owner",
+      });
+    }
+
+    // Check permissions at workspace level
+    const canUpdateSubtaskWorkspace = authorize(
+      workspaceRole,
+      "workspaceRoles",
+      "subtask:update"
+    );
+
+    // Find user’s project role
+    const userProjectInfo = project.members.find(
+      (member) => member.user.toString() === req.user._id.toString()
+    );
+
+    // Check permissions at project level
+    const canUpdateSubtaskProject = authorize(
+      userProjectInfo?.role,
+      "projectRoles",
+      "subtask:update"
+    );
+
+    // Final decision
+    const canUpdateSubtask =
+      canUpdateSubtaskWorkspace || canUpdateSubtaskProject;
+
+    if (!canUpdateSubtask) {
+      return res.status(403).json({
+        message:
+          "You are not authorized to add subtask. Please contact administrator.",
       });
     }
 
@@ -713,17 +894,70 @@ const getMyTasks = async (req, res) => {
 
 
 // Get all archived tasks for the logged-in user
+// const getArchivedTasks = async (req, res) => {
+//   console.log("You want to get archived task");
+  
+//   try {
+//     const archivedTasks = await Task.find({
+//       isArchived: true,
+//       assignees: { $in: [req.user._id] }, // only tasks assigned to logged-in user
+//     })
+//       .populate("project", "title workspace") // optional: populate project details
+//       .populate("createdBy", "name email profilePicture") // optional: populate creator
+//       .sort({ updatedAt: -1 }); // latest archived first
+
+//     res.status(200).json(archivedTasks);
+//   } catch (error) {
+//     console.error("Error fetching archived tasks:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+// Get all archived tasks for the logged-in user (project members + workspace owner/admin)
 const getArchivedTasks = async (req, res) => {
   console.log("You want to get archived task");
-  
+
   try {
+    // Step 1: Find workspaces where user is a member
+    const userWorkspaces = await Workspace.find({
+      "members.user": req.user._id,
+    }).select("_id members");
+
+    let projectFilter = {};
+
+    // Step 2: Check role in workspaces
+    let isOwnerOrAdmin = false;
+    for (const ws of userWorkspaces) {
+      const memberInfo = ws.members.find(
+        (m) => m.user.toString() === req.user._id.toString()
+      );
+      if (["owner", "admin"].includes(memberInfo?.role)) {
+        isOwnerOrAdmin = true;
+        break;
+      }
+    }
+
+    if (isOwnerOrAdmin) {
+      // Workspace owner/admin → fetch all projects from these workspaces
+      const workspaceIds = userWorkspaces.map((w) => w._id);
+      const projects = await Project.find({ workspace: { $in: workspaceIds } }).select("_id");
+      projectFilter = { $in: projects.map((p) => p._id) };
+    } else {
+      // Regular project member → fetch only projects where user is a member
+      const projects = await Project.find({
+        "members.user": req.user._id,
+      }).select("_id");
+      projectFilter = { $in: projects.map((p) => p._id) };
+    }
+
+    // Step 3: Fetch archived tasks
     const archivedTasks = await Task.find({
       isArchived: true,
-      assignees: { $in: [req.user._id] }, // only tasks assigned to logged-in user
+      project: projectFilter,
     })
-      .populate("project", "title workspace") // optional: populate project details
-      .populate("createdBy", "name email profilePicture") // optional: populate creator
-      .sort({ updatedAt: -1 }); // latest archived first
+      .populate("project", "title workspace")
+      .populate("createdBy", "name email profilePicture")
+      .sort({ updatedAt: -1 });
 
     res.status(200).json(archivedTasks);
   } catch (error) {
@@ -731,6 +965,7 @@ const getArchivedTasks = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 // const deleteTask = async (req, res) => {
@@ -804,7 +1039,7 @@ const deleteTask = async (req, res) => {
 
     const project = await Project.findById(task.project);
 
-    const workspace = await Workspace.findById(project.workspace);
+    
 
     if (!project) {
       return res.status(404).json({
@@ -812,18 +1047,31 @@ const deleteTask = async (req, res) => {
       });
     }
 
-    const isMember = project.members.some(
-      (member) => member.user.toString() === req.user._id.toString()
-    );
 
-    if (!isMember) {
-      return res.status(403).json({
-        message: "You are not a member of this project",
+    const workspace = await Workspace.findById(project.workspace);
+
+
+    if (!workspace) {
+      return res.status(404).json({
+        message: "Workspace not found",
       });
     }
 
 
-    const userMemberInfo = workspace.members.find(
+
+    // const isMember = project.members.some(
+    //   (member) => member.user.toString() === req.user._id.toString()
+    // );
+
+    // if (!isMember) {
+    //   return res.status(403).json({
+    //     message: "You are not a member of this project",
+    //   });
+    // }
+
+
+    // Find user’s workspace role
+    const userWorkspaceInfo = workspace.members.find(
       (member) => member.user.toString() === req.user._id.toString()
     );
 
@@ -833,18 +1081,47 @@ const deleteTask = async (req, res) => {
     //   });
     // }
 
-    const canDeleteTask = authorize(
+    // Check permissions at workspace level
+    const canDeleteTaskWorkspace = authorize(
       userMemberInfo?.role,
       "workspaceRoles",
       "task:delete"
     );
 
+    // Find user’s project role
+    const userProjectInfo = project.members.find(
+      (member) => member.user.toString() === req.user._id.toString()
+    );
+
+    // Check permissions at project level
+    const canDeleteTaskProject = authorize(
+      userProjectInfo?.role,
+      "projectRoles",
+      "task:delete"
+    );
+
+    // Final decision
+    const canDeleteTask = canDeleteTaskWorkspace || canDeleteTaskProject;
 
     if (!canDeleteTask) {
       return res.status(403).json({
-        message: "You are not authorized to delete task to this project, Please contact administrator",
+        message:
+          "You are not authorized to delete this task. Please contact administrator.",
       });
     }
+
+    // const canDeleteTask = authorize(
+    //   userMemberInfo?.role,
+    //   "workspaceRoles",
+    //   "task:delete"
+    // );
+
+    // if (!canDeleteTask) {
+    //   return res.status(403).json({
+    //     message:
+    //       "You are not authorized to delete task to this project, Please contact administrator",
+    //   });
+    // }
 
     // Debug logs
     console.log("Task ID to delete:", task._id.toString());

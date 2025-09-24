@@ -15,7 +15,9 @@
         "project:viewAll": true,
         "task:viewAll": true,
         "task:manageAll": true,
-        "task:delete":true
+        "task:delete":true,
+        "subtask:create": true,
+        "subtask:update": true
       }
     },
     "admin": {
@@ -33,7 +35,9 @@
         "project:viewAll": true,
         "task:viewAll": true,
         "task:manageAll": true,
-        "task:delete":true
+        "task:delete":true,
+        "subtask:create": true,
+        "subtask:update": true
       }
     },
     "member": {
@@ -52,7 +56,9 @@
         "task:viewAll": true,
         "task:manageOwn": true,
         "task:manageAll": false,
-        "task:delete":false
+        "task:delete":false,
+        "subtask:create": false,
+        "subtask:update": true
       }
     },
     "viewer": {
@@ -71,7 +77,9 @@
         "task:viewAll": true,
         "task:manageOwn": false,
         "task:manageAll": false,
-        "task:delete":false
+        "task:delete":false,
+        "subtask:create": false,
+        "subtask:update": false
       }
     }
   },
@@ -85,7 +93,9 @@
         "task:update": true,
         "task:delete": true,
         "task:assign": true,
-        "task:viewAll": true
+        "task:viewAll": true,
+        "subtask:create": true,
+        "subtask:update": true
       }
     },
     "contributor": {
@@ -98,7 +108,9 @@
         "task:delete": false,
         "task:assign": false,
         "task:viewAll": true,
-        "task:manageOwn": true
+        "task:manageOwn": true,
+        "subtask:create": false,
+        "subtask:update": true
       }
     },
     "viewer": {
@@ -111,7 +123,9 @@
         "task:delete": false,
         "task:assign": false,
         "task:viewAll": true,
-        "task:manageOwn": false
+        "task:manageOwn": false,
+        "subtask:create": false,
+        "subtask:update": false
       }
     }
   }

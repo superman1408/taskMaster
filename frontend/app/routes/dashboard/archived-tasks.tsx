@@ -71,6 +71,8 @@ import { useGetArchivedTasksQuery } from "@/hooks/use-task";
 import type { Task } from "@/types";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router";
+import { ArrowUpRight } from "lucide-react";
 
 const ArchivedTask = () => {
   const { data: archivedTasks, isLoading, isError } =
@@ -99,7 +101,14 @@ const ArchivedTask = () => {
           >
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">{task.title}</CardTitle>
+                <Link
+                  to={`/workspaces/${task.project.workspace}/projects/${task.project._id}/tasks/${task._id}`}
+                  className="font-medium hover:text-primary hover:underline transition-colors flex items-center"
+                >
+                  {task.title}
+                  <ArrowUpRight className="size-4 ml-1" />
+                </Link>
+                {/* <CardTitle className="text-lg">{task.title}</CardTitle> */}
                 <Badge variant="secondary" className="bg-gray-200 text-gray-700">
                   Archived
                 </Badge>

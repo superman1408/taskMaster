@@ -122,7 +122,7 @@ const TaskDetails = () => {
                     navigate(`/workspaces/${workspaceId}/projects/${projectId}`);
                 },
                 onError: () => {
-                    toast.error("Failed to delete task");
+                    toast.error("Failed to delete task. You are not authorized to delete this task. Please contact administrator.");
                 },
             }
         );
